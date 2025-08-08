@@ -1,0 +1,81 @@
+---
+title: "Titanic_Survival_Analysis"
+author: "Himanshi"
+date: "2025-08-08"
+output: html_document
+---
+
+## Project Overview
+This project analyzes the `Titanic` dataset from R's built-in `datasets` package.  
+It contains aggregated passenger data by Class, Sex, Age, and Survival status.  
+The goal is to explore survival patterns and understand how class, gender, and age affected outcomes.
+
+---
+
+## Loading and Inspecting the Data
+```{r}
+data(Titanic)
+titanic_df <- as.data.frame(Titanic)
+
+head(titanic_df)
+str(titanic_df)
+```
+
+# Survival rate
+```{r}
+aggregate(Freq ~ Sex + Class + Survived, data=titanic_df, sum)
+```
+
+# Overall Survival rate
+```{r}
+total <- sum(titanic_df$Freq)
+survived <- sum(titanic_df$Freq[titanic_df$Survived == "Yes"])
+survival_rate <- survived / total * 100
+survival_rate
+```
+
+# Survival By Sex
+```{r}
+sex_survival <- aggregate(Freq ~ Sex + Survived, data=titanic_df, sum)
+
+barplot(
+  height = matrix(sex_survival$Freq, nrow=2, byrow=TRUE),
+  beside = TRUE,
+  names.arg = c("Female", "Male"),
+  col = c("green", "red"),
+  legend = c("Survived", "Died"),
+  main = "Survival by Sex",
+  ylab = "Number of Passengers"
+)
+```
+
+
+# Survival By Class
+```{r}
+class_survival <- aggregate(Freq ~ Class + Survived, data=titanic_df, sum)
+
+barplot(
+  height = matrix(class_survival$Freq, nrow=2, byrow=TRUE),
+  beside = TRUE,
+  names.arg = c("1st", "2nd", "3rd", "Crew"),
+  col = c("green", "red"),
+  legend = c("Survived", "Died"),
+  main = "Survival by Class",
+  ylab = "Number of Passengers"
+)
+```
+
+# Heatmap: Class vs Sex vs Survival
+```{r}
+class_survival <- aggregate(Freq ~ Class + Survived, data=titanic_df, sum)
+
+barplot(
+  height = matrix(class_survival$Freq, nrow=2, byrow=TRUE),
+  beside = TRUE,
+  names.arg = c("1st", "2nd", "3rd", "Crew"),
+  col = c("green", "red"),
+  legend = c("Survived", "Died"),
+  main = "Survival by Class",
+  ylab = "Number of Passengers"
+)
+```
