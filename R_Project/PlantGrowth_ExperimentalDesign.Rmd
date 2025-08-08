@@ -1,0 +1,105 @@
+---
+title: "PlantGrowth_ExperimentalDesign"
+author: "Himanshi"
+date: "2025-08-08"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+## Introduction
+The **PlantGrowth** dataset contains results from an experiment comparing the effect of different treatments on plant weight.  
+There are three groups:
+- **ctrl**: Control group  
+- **trt1**: Treatment 1  
+- **trt2**: Treatment 2  
+
+The dataset has 30 observations.
+
+data(PlantGrowth)
+boxplot(weight ~ group, data=PlantGrowth, main="Plant Growth by Group")
+
+# View dataset
+```{r}
+head(PlantGrowth)
+summary(PlantGrowth)
+table(PlantGrowth$group)
+```
+
+# Descriptive Statistics
+```{r}
+install.packages("dplyr", repos = "https://cloud.r-project.org")
+library(dplyr)
+install.packages("ggplot2", repos = "https://cloud.r-project.org")
+library(ggplot2)
+
+PlantGrowth %>%
+  group_by(group) %>%
+  summarise(
+    mean_weight = mean(weight),
+    sd_weight = sd(weight),
+    n = n()
+  )
+```
+
+# Boxplot with jittered Points
+```{r}
+install.packages("ggplot2", repos = "https://cloud.r-project.org")
+library(ggplot2)
+
+ggplot(PlantGrowth, aes(x = group, y = weight, fill = group)) +
+  geom_boxplot(alpha = 0.6) +
+  geom_jitter(width = 0.1, size = 2, alpha = 0.7) +
+  labs(title = "Plant Weight by Group",
+       x = "Group",
+       y = "Weight") +
+  theme_minimal()
+```
+
+
+# Mean Plot with Error Bars
+```{r}
+install.packages("dplyr", repos = "https://cloud.r-project.org")
+library(ggplot2)
+install.packages("ggplot2", repos = "https://cloud.r-project.org")
+library(dplyr)
+
+stats <- PlantGrowth %>%
+  group_by(group) %>%
+  summarise(
+    mean_weight = mean(weight),
+    se = sd(weight) / sqrt(n())
+  )
+ggplot(stats, aes(x = group, y = mean_weight, fill = group)) +
+  geom_col(alpha = 0.7) +
+  geom_errorbar(aes(ymin = mean_weight - se, ymax = mean_weight + se),
+                width = 0.2, color = "black") +
+  geom_text(aes(label = round(mean_weight, 2)), vjust = -1) +
+  labs(title = "Mean Plant Weight by Group",
+       x = "Group",
+       y = "Mean Weight") +
+  theme_minimal()
+```
+
+# ANOVA
+```{r}
+model <- aov(weight ~ group, data=PlantGrowth)
+summary(model)
+```
+
+# Post-hoc test
+```{r}
+TukeyHSD(model)
+```
+
+# Violin Plot
+```{r}
+ggplot(PlantGrowth, aes(x = group, y = weight, fill = group)) +
+  geom_violin(trim = FALSE, alpha = 0.6) +
+  geom_boxplot(width = 0.1, fill = "white") +
+  labs(title = "Distribution of Plant Weights by Group",
+       x = "Group",
+       y = "Weight") +
+  theme_minimal()
+
+```
